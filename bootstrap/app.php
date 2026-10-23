@@ -12,7 +12,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->redirectGuestsTo(function ($request) {
+            session()->flash('errors', (new \Illuminate\Support\ViewErrorBag)->put('login', new \Illuminate\Support\MessageBag([
+                'email' => 'Silakan login terlebih dahulu.',
+            ])));
+            return route('home');
+        });
+
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

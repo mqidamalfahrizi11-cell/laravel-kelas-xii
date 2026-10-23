@@ -52,17 +52,23 @@
                     <table id="table-breakpoint">
                       <thead>
                         <tr>
-                        <th>Cast</th>
-                        <th>Peran</th>
+                          <th>Nama Cast</th>
+                          <th>Peran</th>
                         </tr>
                       </thead>
                       <tbody>
-                        @foreach ($perans as $peran)
-                        <tr>
-                          <td class="w3-list-info">{{ $peran->cast_id }}</td>
-                          <td class="w3-list-info">{{ $peran->actor }}</td>
-                        </tr>
-                        @endforeach
+                        @forelse ($perans as $peran)
+                          <tr>
+                            <td class="w3-list-info">{{ $peran->cast?->name ?? '-' }}</td>
+                            <td class="w3-list-info">{{ $peran->actor }}</td>
+                          </tr>
+                        @empty
+                          <tr>
+                            <td colspan="2" class="w3-list-info text-center" style="padding: 15px; color: #888;">
+                              Belum ada data cast
+                            </td>
+                          </tr>
+                        @endforelse
                       </tbody>
                     </table>
                   </div>
@@ -118,30 +124,60 @@
           <div class="all-comments-info">
             <a href="#">Comments</a>
             <div class="agile-info-wthree-box">
-              <form>
-                <input type="text" placeholder="Name" required="">			           					   
-                <input type="text" placeholder="Email" required="">
-                <input type="text" placeholder="Phone" required="">
-                <textarea placeholder="Message" required=""></textarea>
-                <input type="submit" value="SEND">
-                <div class="clearfix"> </div>
-              </form>
+              @auth
+                <form action="{{ route('kritik.store', $film->id) }}" method="POST">
+                  @csrf
+                  <div style="margin-bottom: 10px;">
+                    <label style="color: #fff;">Rating</label>
+                    <select name="rating" required="" style="width: 100%; padding: 8px; background: #1a1a2e; color: #fff; border: 1px solid #444;">
+                      <option value="">-- Pilih Rating --</option>
+                      <option value="1" {{ old('rating') == 1 ? 'selected' : '' }}>⭐ 1</option>
+                      <option value="2" {{ old('rating') == 2 ? 'selected' : '' }}>⭐⭐ 2</option>
+                      <option value="3" {{ old('rating') == 3 ? 'selected' : '' }}>⭐⭐⭐ 3</option>
+                      <option value="4" {{ old('rating') == 4 ? 'selected' : '' }}>⭐⭐⭐⭐ 4</option>
+                      <option value="5" {{ old('rating') == 5 ? 'selected' : '' }}>⭐⭐⭐⭐⭐ 5</option>
+                    </select>
+                    @error('rating')
+                      <span style="color: #e74c3c; font-size: 12px;">{{ $message }}</span>
+                    @enderror
+                  </div>
+                  <textarea name="comment" placeholder="Tulis komentar..." required="" style="width: 100%; min-height: 80px; padding: 8px; background: #1a1a2e; color: #fff; border: 1px solid #444;">{{ old('comment') }}</textarea>
+                  @error('comment')
+                    <span style="color: #e74c3c; font-size: 12px;">{{ $message }}</span>
+                  @enderror
+                  <input type="submit" value="KIRIM">
+                  <div class="clearfix"> </div>
+                </form>
+              @else
+                <p style="color: #ccc; padding: 15px 0;">
+                  <a href="#" data-toggle="modal" data-target="#myModal" style="color: #f4c10f;">Login</a> untuk menambahkan komentar.
+                </p>
+              @endauth
             </div>
           </div>
           <div class="media-grids">
-            @foreach ($comments as $comment)
+            @forelse ($comments as $comment)
               <div class="media">
-                <h5>{{ $comment->user_id }}</h5>
+                <h5>{{ $comment->user?->name ?? 'Pengguna dihapus' }}
+                  <small style="color: #f4c10f; margin-left: 5px;">
+                    @for ($i = 1; $i <= 5; $i++)
+                      <i class="fa fa-star{{ $i <= $comment->rating ? '' : '-o' }}" aria-hidden="true"></i>
+                    @endfor
+                  </small>
+                  <small style="color: #888; margin-left: 10px;">{{ $comment->created_at->diffForHumans() }}</small>
+                </h5>
                 <div class="media-left">
                   <a href="#">
-                    <img src="{{ asset('storage/images/user.jpg') }}" title="One movies" alt=" " />
+                    <img src="{{ asset('storage/images/user.jpg') }}" title="User" alt=" " />
                   </a>
                 </div>
                 <div class="media-body">
                   <p>{{ $comment->comment }}</p>
                 </div>
               </div>
-            @endforeach
+            @empty
+              <p style="color: #888; padding: 15px 0;">Belum ada komentar. Jadilah yang pertama!</p>
+            @endforelse
           </div>
         </div>
       </div>

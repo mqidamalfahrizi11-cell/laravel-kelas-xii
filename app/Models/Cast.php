@@ -10,4 +10,9 @@ class Cast extends Model
     use HasFactory;
     protected $table = 'casts';
     protected $fillable = ['name','age', 'bio'];
+
+    public function perans()
+    {
+        return $this->hasMany(Peran::class);
+    }
 }

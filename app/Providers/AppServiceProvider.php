@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
         if(Schema::hasTable('genres'))
         {
             view()->share('genres', Genre::all());
-            Paginator::useBootstrap();
+            Paginator::useBootstrapThree();
         }
     }
 }

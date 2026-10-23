@@ -11,7 +11,7 @@ class StoreCastRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreCastRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:45'],
+            'age' => ['required', 'integer', 'min:1', 'max:120'],
+            'bio' => ['required', 'string'],
         ];
     }
 }

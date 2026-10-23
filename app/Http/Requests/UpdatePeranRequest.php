@@ -11,7 +11,7 @@ class UpdatePeranRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdatePeranRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'film_id' => ['required', 'exists:films,id'],
+            'cast_id' => ['required', 'exists:casts,id'],
+            'actor' => ['required', 'string', 'max:255'],
         ];
     }
 }
