@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdatePeranRequest extends FormRequest
 {
@@ -21,10 +22,33 @@ class UpdatePeranRequest extends FormRequest
      */
     public function rules(): array
     {
+        $peran = $this->route('peran');
+        $peranId = is_object($peran) ? $peran->id : $peran;
+
         return [
             'film_id' => ['required', 'exists:films,id'],
             'cast_id' => ['required', 'exists:casts,id'],
-            'actor' => ['required', 'string', 'max:255'],
+            'actor' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('perans', 'actor')
+                    ->where('film_id', $this->film_id)
+                    ->where('cast_id', $this->cast_id)
+                    ->ignore($peranId),
+            ],
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'actor.unique' => 'Peran ini sudah ada untuk film dan cast tersebut.',
         ];
     }
 }

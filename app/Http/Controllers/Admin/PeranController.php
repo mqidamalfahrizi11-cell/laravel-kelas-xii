@@ -16,6 +16,10 @@ class PeranController extends Controller
     {
         $query = Peran::with(['film', 'cast'])->latest();
 
+        if ($request->filled('film_id')) {
+            $query->where('film_id', $request->film_id);
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -30,8 +34,9 @@ class PeranController extends Controller
         }
 
         $perans = $query->paginate(15)->withQueryString();
+        $films = Film::orderBy('title')->get(['id', 'title', 'year']);
 
-        return view('admin.perans.index', compact('perans'));
+        return view('admin.perans.index', compact('perans', 'films'));
     }
 
     public function create()

@@ -65,8 +65,9 @@
                         @empty
                           <tr>
                             <td colspan="2" class="w3-list-info text-center" style="padding: 15px; color: #888;">
-                              Belum ada data cast
+                              Belum ada data peran
                             </td>
+                            <!-- Belum ada data cast -->
                           </tr>
                         @endforelse
                       </tbody>

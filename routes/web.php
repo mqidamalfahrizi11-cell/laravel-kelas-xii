@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\{
 
 Route::get('/', [FilmController::class, 'movieHome'])->name('home');
 Route::get('/movies', [FilmController::class, 'movies'])->name('movies');
+Route::get('/search', [FilmController::class, 'search'])->name('movies.search');
+Route::get('/search/suggest', [FilmController::class, 'suggest'])->name('movies.suggest')->middleware('throttle:60,1');
 Route::get('/movies/{film}', [FilmController::class, 'show'])->name('movies.show');
 Route::get('/movies/genre/{genre}', [FilmController::class, 'moviesByGenre'])->name('genre');
 

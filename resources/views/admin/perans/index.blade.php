@@ -16,18 +16,28 @@
       </div>
 
       <div class="panel-body">
-        <!-- Search Bar -->
+        <!-- Search & Filter Bar -->
         <div class="row" style="margin-bottom: 20px;">
-          <div class="col-md-6 col-sm-8">
+          <div class="col-md-8 col-sm-10">
             <form action="{{ route('admin.perans.index') }}" method="GET" class="form-inline">
-              <div class="input-group" style="width: 100%;">
+              <div class="form-group" style="margin-right: 5px; margin-bottom: 5px;">
+                <select name="film_id" class="form-control" onchange="this.form.submit()">
+                  <option value="">-- Semua Film --</option>
+                  @foreach($films as $f)
+                    <option value="{{ $f->id }}" {{ request('film_id') == $f->id ? 'selected' : '' }}>
+                      {{ $f->title }} ({{ $f->year }})
+                    </option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="input-group" style="min-width: 260px; margin-bottom: 5px;">
                 <input type="text" name="search" class="form-control" placeholder="Cari nama karakter / film / aktor..." value="{{ request('search') }}">
                 <span class="input-group-btn">
                   <button class="btn btn-admin-primary" type="submit">
                     <i class="fa fa-search"></i> Cari
                   </button>
-                  @if(request('search'))
-                    <a href="{{ route('admin.perans.index') }}" class="btn btn-default" title="Reset">
+                  @if(request('search') || request('film_id'))
+                    <a href="{{ route('admin.perans.index') }}" class="btn btn-default" title="Reset Filter">
                       <i class="fa fa-times"></i>
                     </a>
                   @endif
@@ -35,9 +45,14 @@
               </div>
             </form>
           </div>
-          @if(request('search'))
-            <div class="col-md-6 col-sm-4 text-right" style="padding-top: 7px;">
-              <span class="text-muted">Hasil pencarian: "<strong>{{ request('search') }}</strong>"</span>
+          @if(request('search') || request('film_id'))
+            <div class="col-md-4 col-sm-2 text-right" style="padding-top: 7px;">
+              <span class="text-muted">
+                Filter aktif
+                @if(request('film_id') && ($selectedFilm = $films->firstWhere('id', request('film_id'))))
+                  : Film "<strong>{{ $selectedFilm->title }}</strong>"
+                @endif
+              </span>
             </div>
           @endif
         </div>

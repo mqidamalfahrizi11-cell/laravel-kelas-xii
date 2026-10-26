@@ -8,17 +8,21 @@
           <!--/browse-agile-w3ls -->
           <div class="browse-agile-w3ls general-w3ls">
             <div class="tittle-head">
-              @if ($genreFilm !== null)
-                      <h4 class="latest-text">Movies Of Genre {{ $genreFilm->name }}</h4>
-                    @else
-                      <h4 class="latest-text">List Of Movies</h4>
-                    @endif
+              @if (isset($keyword))
+                <h4 class="latest-text">Hasil pencarian: {{ $keyword }}</h4>
+              @elseif ($genreFilm !== null)
+                <h4 class="latest-text">Movies Of Genre {{ $genreFilm->name }}</h4>
+              @else
+                <h4 class="latest-text">List Of Movies</h4>
+              @endif
               <div class="container">
                 <div class="agileits-single-top">
                   <ol class="breadcrumb">
                     <li><a href="{{ route('home') }}">Home</a></li>
                     <li><a href="{{ route('movies') }}">Movies</a></li>
-                    @if ($genreFilm !== null)
+                    @if (isset($keyword))
+                      <li class="active">Hasil pencarian: {{ $keyword }}</li>
+                    @elseif ($genreFilm !== null)
                       <li class="active">Genre {{ $genreFilm->name }}</li>
                     @else
                       <li class="active">All Movies</li>
@@ -29,40 +33,15 @@
             </div>
             <div class="container">
               <div class="browse-inner">
-              @for ($data = 0; $data < $films->count(); $data++)
-              <div class="col-md-2 w3l-movie-gride-agile">
-                <a href="{{ route('movies.show', $films[$data]->id) }}" class="hvr-shutter-out-horizontal"><img src="{{ asset($films[$data]->poster) }}" title="album-name" alt=" " />
-                  <div class="w3l-action-icon">
-                    <i class="fa fa-play-circle" aria-hidden="true"></i>
-                  </div>
-                </a>
-                <div class="mid-1">
-                  <div class="w3l-movie-text">
-                    <h6><a href="{{ route('movies.show', $films[$data]->id) }}">{{ $films[$data]->title }}</a></h6>							
-                  </div>
-                  <div class="mid-2">
-                    <p>{{ $films[$data]->year }}</p>
-                    <div class="block-stars">
-                      <ul class="w3l-ratings">
-                            <li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
-                          <li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
-                          <li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
-                          <li><a href="#"><i class="fa fa-star-half-o" aria-hidden="true"></i></a></li>
-                          <li><a href="#"><i class="fa fa-star-o" aria-hidden="true"></i></a></li>
-                            
-                  
-                      </ul>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
+              @if ($films->count() == 0)
+                <div class="col-md-12 text-center" style="padding: 50px 0;">
+                  <h4 style="color: #777;">Film tidak ditemukan</h4>
                 </div>
-                @if ($films[$data]->year == now()->year)
-                <div class="ribben two">
-                  <p>NEW</p>
-                </div>
-                @endif
-              </div>
-                @endfor
+              @else
+                @foreach ($films as $film)
+                  @include('components.partials.movie-card', ['film' => $film])
+                @endforeach
+              @endif
               <div class="clearfix"> </div>
             </div>
               </div>
@@ -89,7 +68,7 @@
                               <span class="frist" aria-hidden="true">{{ $numberPage }}</span>
                             </li>
                           @else
-                            <li><a href="?page={{ $numberPage }}" class="frist">{{ $numberPage }}</a></li>
+                            <li><a href="{{ $films->url($numberPage) }}" class="frist">{{ $numberPage }}</a></li>
                           @endif
                         @endfor
                         {{-- Number Page/> --}}
@@ -107,6 +86,28 @@
                 </nav>
             @endif
           </div>
+
+          @isset($recommendations)
+            <div class="browse-agile-w3ls general-w3ls" style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
+              <div class="tittle-head">
+                <h4 class="latest-text">
+                  @if (!empty($notFound))
+                    Film tidak ditemukan, mungkin kamu suka:
+                  @else
+                    Rekomendasi Film
+                  @endif
+                </h4>
+              </div>
+              <div class="container">
+                <div class="browse-inner">
+                  @foreach ($recommendations as $film)
+                    @include('components.partials.movie-card', ['film' => $film])
+                  @endforeach
+                  <div class="clearfix"> </div>
+                </div>
+              </div>
+            </div>
+          @endisset
         </div>
     <!-- //movie-browse-agile -->
     </div>	
